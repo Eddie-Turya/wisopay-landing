@@ -117,7 +117,8 @@ body { font-family: var(--w-font); background: var(--w-paper); color: var(--w-in
   background: #fff; box-shadow: 0 10px 30px rgba(16,18,23,.10), 0 0 0 6px rgba(255,255,255,.7);
   animation: w-bob 6s ease-in-out infinite;
 }
-.w-float img { width: 30px; height: 30px; object-fit: contain; border-radius: 999px; }
+.w-float--logo { width: 54px; height: 54px; }
+.w-float img { width: 38px; height: 38px; object-fit: contain; }
 .w-float--dark { background: var(--w-black); color: #fff; }
 .w-float--lime { background: var(--w-lime); color: var(--w-ink); }
 .w-float--yellow { background: var(--w-yellow-2); color: var(--w-ink); }
