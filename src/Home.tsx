@@ -234,8 +234,8 @@ function DashboardMock() {
           <svg className="w-dash__chart" viewBox={`0 0 ${w} ${h + 24}`} preserveAspectRatio="none">
             <defs>
               <linearGradient id="wfill" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0" stopColor="#c6f56f" stopOpacity=".35" />
-                <stop offset="1" stopColor="#c6f56f" stopOpacity="0" />
+                <stop offset="0" stopColor="#0eb981" stopOpacity=".35" />
+                <stop offset="1" stopColor="#0eb981" stopOpacity="0" />
               </linearGradient>
             </defs>
             {[0.25, 0.5, 0.75].map(f => <line key={f} x1="0" x2={w} y1={h * f} y2={h * f} className="w-dash__grid" />)}
