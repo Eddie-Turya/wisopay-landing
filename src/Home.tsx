@@ -421,6 +421,33 @@ function Features() {
   )
 }
 
+function FeeBearer() {
+  const [who, setWho] = useState<'merchant' | 'customer'>('merchant')
+  const price = 10000
+  const fee = Math.ceil(price * 0.02)
+  const pays = who === 'customer' ? price + fee : price
+  const gets = who === 'merchant' ? price - fee : price
+  const tzs = (n: number) => `TZS ${n.toLocaleString('en-US')}`
+  return (
+    <div className="w-fee">
+      <div className="w-fee__head">
+        <span>Who pays the 2%?</span>
+        <div className="w-fee__switch" role="radiogroup" aria-label="Who pays the fee">
+          <span className="w-fee__thumb" style={{ transform: who === 'customer' ? 'translateX(100%)' : 'none' }} aria-hidden="true" />
+          <button type="button" role="radio" aria-checked={who === 'merchant'} className={who === 'merchant' ? 'is-on' : ''} onClick={() => setWho('merchant')}>You</button>
+          <button type="button" role="radio" aria-checked={who === 'customer'} className={who === 'customer' ? 'is-on' : ''} onClick={() => setWho('customer')}>Customer</button>
+        </div>
+      </div>
+      <dl className="w-fee__rows">
+        <div><dt>Your price</dt><dd>{tzs(price)}</dd></div>
+        <div><dt>Customer pays</dt><dd key={`p${who}`} className="w-fee__val">{tzs(pays)}</dd></div>
+        <div className="w-fee__total"><dt>You receive</dt><dd key={`g${who}`} className="w-fee__val">{tzs(gets)}</dd></div>
+      </dl>
+      <p className="w-fee__note">Set it once in the portal. You can change it any time.</p>
+    </div>
+  )
+}
+
 // ─── Pricing ─────────────────────────────────────────────────────────────────
 
 function Pricing() {
@@ -451,8 +478,10 @@ function Pricing() {
             <p className="w-price__desc">Collect from every mobile wallet in Tanzania with one account.</p>
             <div className="w-price__amt">2 %</div>
             <p className="w-price__unit">per successful payment</p>
+            <FeeBearer />
             <a href={PORTAL} className="w-btn w-btn--dark w-btn--block">Create an account</a>
             <ul className="w-ticks w-ticks--dot">
+              <li>You choose who pays the fee: you or your customer</li>
               <li>No monthly fee, no setup fee</li>
               <li>M-Pesa, Airtel Money, Mixx by Yas, HaloPesa</li>
               <li>API, payment links and USSD push</li>

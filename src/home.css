@@ -503,3 +503,19 @@ body { font-family: var(--w-font); background: var(--w-paper); color: var(--w-in
 .cookie-banner__decline:hover { color: var(--w-ink); border-color: #cfd3da; }
 .cookie-banner__accept { background: var(--w-green); border-radius: 999px; padding: 8px 18px; }
 .cookie-banner__accept:hover { background: var(--w-green-hover); }
+
+/* Fee bearer switch (pricing) */
+.w-fee { background: var(--w-green-mist); border: 1px solid #d3f1e4; border-radius: 16px; padding: 16px; margin: 0 0 22px; display: flex; flex-direction: column; gap: 12px; }
+.w-fee__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 14px; font-weight: 500; }
+.w-fee__switch { position: relative; display: grid; grid-template-columns: 1fr 1fr; background: #fff; border: 1px solid var(--w-line); border-radius: 999px; padding: 3px; }
+.w-fee__thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 999px; background: var(--w-green); transition: transform .35s var(--w-spring, ease); }
+.w-fee__switch button { position: relative; z-index: 1; background: none; border: 0; padding: 6px 14px; font: 500 13px/1 var(--w-font); color: var(--w-ink-2); border-radius: 999px; cursor: pointer; transition: color .25s; }
+.w-fee__switch button.is-on { color: #fff; }
+.w-fee__switch button:focus-visible { outline: 2px solid var(--w-green-ink); outline-offset: 2px; }
+.w-fee__rows { display: flex; flex-direction: column; gap: 6px; margin: 0; }
+.w-fee__rows > div { display: flex; justify-content: space-between; font-size: 14px; color: var(--w-ink-2); }
+.w-fee__rows dd { margin: 0; font-variant-numeric: tabular-nums; color: var(--w-ink); }
+.w-fee__total { border-top: 1px dashed #c4e6d6; padding-top: 8px; margin-top: 2px; }
+.w-fee__total dt, .w-fee__total dd { font-weight: 600; color: var(--w-ink); }
+.w-fee__val { animation: w-up .4s var(--w-ease, ease) both; }
+.w-fee__note { font-size: 12.5px; color: var(--w-ink-3); }
