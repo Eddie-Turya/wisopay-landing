@@ -12,6 +12,8 @@ import halopesa from './assets/halopesa.png'
 import './home.css'
 
 const PORTAL = 'https://portal.wisopay.io'
+const SIGNUP = `${PORTAL}/signup`
+const LOGIN = `${PORTAL}/login`
 
 const NETWORKS = [
   { name: 'M-Pesa', by: 'Vodacom', logo: mpesa },
@@ -84,8 +86,8 @@ export function SiteNav() {
           <Link to="/contact">Contact</Link>
         </nav>
         <div className="w-nav__actions">
-          <a href={PORTAL} className="w-nav__login">Log in</a>
-          <a href={PORTAL} className="w-btn w-btn--dark w-btn--sm">Create an account</a>
+          <a href={LOGIN} className="w-nav__login">Log in</a>
+          <a href={SIGNUP} className="w-btn w-btn--dark w-btn--sm">Create an account</a>
           <button className="w-nav__burger" onClick={() => setOpen(o => !o)} aria-label="Menu" aria-expanded={open}>
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -98,8 +100,8 @@ export function SiteNav() {
           <Link to="/sandbox">Sandbox</Link>
           <Link to="/contact">Contact</Link>
           <div className="w-nav__sheet-cta">
-            <a href={PORTAL} className="w-btn w-btn--light">Log in</a>
-            <a href={PORTAL} className="w-btn w-btn--dark">Create an account</a>
+            <a href={LOGIN} className="w-btn w-btn--light">Log in</a>
+            <a href={SIGNUP} className="w-btn w-btn--dark">Create an account</a>
           </div>
         </div>
       )}
@@ -140,7 +142,7 @@ function Hero() {
           your customer's phone, collects the payment and settles it to your account.
         </p>
         <div className="w-hero__cta">
-          <a href={PORTAL} className="w-btn w-btn--dark w-btn--lg">Create an account</a>
+          <a href={SIGNUP} className="w-btn w-btn--dark w-btn--lg">Create an account</a>
           <a href="#methods" className="w-btn w-btn--light w-btn--lg">See payment methods</a>
         </div>
       </div>
@@ -269,7 +271,7 @@ function Overview() {
           <div className="w-glowcard__glow" aria-hidden="true" />
           <div className="w-glowcard__left">
             <p>Your customer gets a PIN prompt on their phone. No app, no card, no internet needed.</p>
-            <a href={PORTAL} className="w-btn w-btn--white">Create an account</a>
+            <a href={SIGNUP} className="w-btn w-btn--white">Create an account</a>
           </div>
           <ul className="w-ticks w-ticks--light" data-w-stagger>
             <li>M-Pesa, Airtel Money, Mixx by Yas and HaloPesa.</li>
@@ -400,7 +402,7 @@ function Features() {
             <li>Idempotency keys so a retry never charges a customer twice.</li>
             <li>A full sandbox where payments complete instantly and webhooks still fire.</li>
           </ul>
-          <a href={PORTAL} className="w-btn w-btn--light w-btn--lg">Create an account</a>
+          <a href={SIGNUP} className="w-btn w-btn--light w-btn--lg">Create an account</a>
         </div>
         <div className="w-feat__art" data-w-reveal>
           <div className="w-receipt">
@@ -464,7 +466,7 @@ function Pricing() {
             <p className="w-price__desc">Build and test your integration before you take a single real shilling.</p>
             <div className="w-price__amt">Free</div>
             <p className="w-price__unit">no card, no commitment</p>
-            <a href={PORTAL} className="w-btn w-btn--light w-btn--block">Get test keys</a>
+            <a href={SIGNUP} className="w-btn w-btn--light w-btn--block">Get test keys</a>
             <ul className="w-ticks w-ticks--dot">
               <li>Sandbox API keys on sign-up</li>
               <li>Payments complete instantly</li>
@@ -479,7 +481,7 @@ function Pricing() {
             <div className="w-price__amt">2 %</div>
             <p className="w-price__unit">per successful payment</p>
             <FeeBearer />
-            <a href={PORTAL} className="w-btn w-btn--dark w-btn--block">Create an account</a>
+            <a href={SIGNUP} className="w-btn w-btn--dark w-btn--block">Create an account</a>
             <ul className="w-ticks w-ticks--dot">
               <li>You choose who pays the fee: you or your customer</li>
               <li>No monthly fee, no setup fee</li>
@@ -532,7 +534,7 @@ function Methods() {
             ))}
           </div>
           <div className="w-center">
-            <a href={PORTAL} className="w-btn w-btn--white">Create an account</a>
+            <a href={SIGNUP} className="w-btn w-btn--white">Create an account</a>
           </div>
         </div>
       </div>
@@ -614,7 +616,7 @@ function Cta() {
           <p>Sign up in minutes. Test in the sandbox right away, go live once your business is verified.</p>
         </div>
         <div className="w-cta__btns">
-          <a href={PORTAL} className="w-btn w-btn--lime w-btn--lg">Create an account <ArrowRight size={16} /></a>
+          <a href={SIGNUP} className="w-btn w-btn--lime w-btn--lg">Create an account <ArrowRight size={16} /></a>
           <Link to="/contact" className="w-btn w-btn--ghost w-btn--lg">Talk to us</Link>
         </div>
       </div>
@@ -634,7 +636,7 @@ export function SiteFooter() {
           <div className="w-foot__brand">
             <Link to="/" className="w-logo w-logo--light"><img src="/logo.png" alt="" /><span>wisopay</span></Link>
             <p>Mobile money payments for Tanzania. M-Pesa, Airtel Money, Mixx by Yas and HaloPesa in one account.</p>
-            <a href={PORTAL} className="w-btn w-btn--lime">Create an account</a>
+            <a href={SIGNUP} className="w-btn w-btn--lime">Create an account</a>
           </div>
           <div className="w-foot__cols">
             <div>
