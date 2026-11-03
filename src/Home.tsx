@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
   ArrowRight, Check, Menu, X, Smartphone, Link2, Zap, Bell, ShieldCheck, Code2,
@@ -19,6 +19,31 @@ const NETWORKS = [
   { name: 'Mixx by Yas', by: 'Yas', logo: yas },
   { name: 'HaloPesa', by: 'Halotel', logo: halopesa },
 ]
+
+function CountUp({ to, prefix = '', duration = 1400 }: { to: number; prefix?: string; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const [val, setVal] = useState(0)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setVal(to); return }
+    let raf = 0
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return
+      obs.disconnect()
+      const start = performance.now()
+      const tick = (t: number) => {
+        const p = Math.min(1, (t - start) / duration)
+        setVal(Math.round(to * (1 - Math.pow(1 - p, 3))))
+        if (p < 1) raf = requestAnimationFrame(tick)
+      }
+      raf = requestAnimationFrame(tick)
+    }, { threshold: 0.4 })
+    obs.observe(el)
+    return () => { obs.disconnect(); cancelAnimationFrame(raf) }
+  }, [to, duration])
+  return <span ref={ref}>{prefix}{val.toLocaleString('en-US')}</span>
+}
 
 // ─── Nav ─────────────────────────────────────────────────────────────────────
 
@@ -101,7 +126,7 @@ function Hero() {
       <div className="w-hero__swirl" aria-hidden="true" />
       <div className="w-hero__floaters" aria-hidden="true">
         {FLOATERS.map((f, i) => (
-          <span key={i} className={`w-float w-float--${f.tone ?? 'logo'}`} style={{ ...f.style, animationDelay: `${i * 0.7}s` }}>
+          <span key={i} className={`w-float w-float--${f.tone ?? 'logo'}`} style={{ ...f.style, animationDelay: `${0.45 + i * 0.09}s, ${1.2 + i * 0.7}s` }}>
             {f.logo ? <img src={f.logo} alt="" /> : f.icon ? <f.icon size={16} /> : null}
           </span>
         ))}
@@ -130,6 +155,25 @@ function Hero() {
 const CHART = [6, 4, 5, 4, 9, 5, 4, 22, 6, 5, 34, 7, 5, 4, 26, 6, 18, 5, 4, 30, 6, 12, 8, 5, 24, 7, 38, 14, 46]
 
 function DashboardMock() {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const r = el.getBoundingClientRect()
+      const p = Math.min(1, Math.max(0, (window.innerHeight - r.top) / (window.innerHeight * 0.75)))
+      el.style.setProperty('--tilt', `${(1 - p) * 16}deg`)
+      el.style.setProperty('--sc', `${0.93 + p * 0.07}`)
+    }
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(raf) }
+  }, [])
+
   const w = 760, h = 190, max = 50
   const step = w / (CHART.length - 1)
   const pts = CHART.map((v, i) => [i * step, h - (v / max) * h] as const)
@@ -148,7 +192,7 @@ function DashboardMock() {
   ]
 
   return (
-    <div className="w-dash" role="img" aria-label="Preview of the WisoPay merchant portal">
+    <div ref={ref} className="w-dash" data-w-watch role="img" aria-label="Preview of the WisoPay merchant portal">
       <aside className="w-dash__side">
         <div className="w-dash__brand">
           <img src="/logo.png" alt="" />
@@ -183,8 +227,8 @@ function DashboardMock() {
             </div>
           </div>
           <div className="w-dash__metrics">
-            <div><small>Transactions</small><b>148</b></div>
-            <div><small>Volume</small><b>TZS 3,835,000</b><em>after 2% fee: TZS 3,758,300</em></div>
+            <div><small>Transactions</small><b><CountUp to={148} /></b></div>
+            <div><small>Volume</small><b><CountUp to={3835000} prefix="TZS " /></b><em>after 2% fee: <CountUp to={3758300} prefix="TZS " /></em></div>
             <div><small>Networks</small><span className="w-dash__nets">{NETWORKS.map(n => <img key={n.name} src={n.logo} alt="" />)}</span></div>
           </div>
           <svg className="w-dash__chart" viewBox={`0 0 ${w} ${h + 24}`} preserveAspectRatio="none">
@@ -195,8 +239,8 @@ function DashboardMock() {
               </linearGradient>
             </defs>
             {[0.25, 0.5, 0.75].map(f => <line key={f} x1="0" x2={w} y1={h * f} y2={h * f} className="w-dash__grid" />)}
-            <path d={area} fill="url(#wfill)" />
-            <path d={line} className="w-dash__line" />
+            <path d={area} fill="url(#wfill)" className="w-dash__area" />
+            <path d={line} className="w-dash__line" pathLength={1} />
           </svg>
           <div className="w-dash__axis">
             {['4 Oct', '9 Oct', '14 Oct', '19 Oct', '24 Oct', '29 Oct', '3 Nov'].map(d => <span key={d}>{d}</span>)}
@@ -227,7 +271,7 @@ function Overview() {
             <p>Your customer gets a PIN prompt on their phone. No app, no card, no internet needed.</p>
             <a href={PORTAL} className="w-btn w-btn--white">Create an account</a>
           </div>
-          <ul className="w-ticks w-ticks--light">
+          <ul className="w-ticks w-ticks--light" data-w-stagger>
             <li>M-Pesa, Airtel Money, Mixx by Yas and HaloPesa.</li>
             <li>Collect through the API, a payment link or a USSD push from the portal.</li>
             <li>Signed webhooks the moment a payment completes.</li>
@@ -235,11 +279,11 @@ function Overview() {
           </ul>
         </div>
 
-        <div className="w-duo" data-w-reveal>
+        <div className="w-duo" data-w-stagger>
           <article className="w-tile">
             <div className="w-tile__art w-tile__art--dark">
               <div className="w-stat">
-                <b>4</b>
+                <b><CountUp to={4} duration={900} /></b>
                 <span>mobile money networks<br />in Tanzania</span>
               </div>
               <div className="w-ring" aria-hidden="true">
@@ -291,7 +335,7 @@ function How() {
             <h2 className="w-h2">Three steps, and you're getting paid.</h2>
             <p className="w-lead">No aggregator contract, no hardware: one account, one integration, and your customers pay.</p>
           </div>
-          <div className="w-steps">
+          <div className="w-steps" data-w-stagger>
             {STEPS.map((s, i) => (
               <div key={s.t} className="w-step">
                 <span className="w-step__n">{i + 1}</span>
@@ -324,7 +368,7 @@ function Tools() {
           <h2 className="w-h2">Pick how you sell.<br />WisoPay collects for you.</h2>
           <p className="w-lead">Every channel pays into the same balance, with the same fee and the same settlement.</p>
         </div>
-        <div className="w-tools" data-w-reveal>
+        <div className="w-tools" data-w-stagger>
           {TOOLS.map(t => (
             <article key={t.name} className="w-tool">
               <span className={`w-tool__icon w-tool__icon--${t.tone}`}><t.icon size={20} /></span>
@@ -351,7 +395,7 @@ function Features() {
         <div className="w-feat__copy" data-w-reveal>
           <span className="w-pill w-pill--yellow">Features</span>
           <h2 className="w-h2 w-h2--left">Collecting mobile money in Tanzania has never been this simple.</h2>
-          <ul className="w-ticks">
+          <ul className="w-ticks" data-w-stagger>
             <li>Signed webhooks (HMAC-SHA256) the moment a payment completes or fails.</li>
             <li>Idempotency keys so a retry never charges a customer twice.</li>
             <li>A full sandbox where payments complete instantly and webhooks still fire.</li>
@@ -387,7 +431,7 @@ function Pricing() {
           <span className="w-pill w-pill--yellow">Pricing</span>
           <h2 className="w-h2">Simple, with no surprises.</h2>
         </div>
-        <div className="w-prices" data-w-reveal>
+        <div className="w-prices" data-w-stagger>
           <article className="w-price">
             <h3>Sandbox</h3>
             <p className="w-price__desc">Build and test your integration before you take a single real shilling.</p>
@@ -449,7 +493,7 @@ function Methods() {
             <h2 className="w-h2">Every mobile wallet,<br />one account.</h2>
             <p className="w-lead">WisoPay connects to all four mobile money networks in Tanzania, from Dar es Salaam to Kigoma.</p>
           </div>
-          <div className="w-methods">
+          <div className="w-methods" data-w-stagger>
             {NETWORKS.map(n => (
               <a key={n.name} href={PORTAL} className="w-method">
                 <img src={n.logo} alt="" />
@@ -509,7 +553,7 @@ function Developers() {
             </div>
             <pre><code>{CODE}</code></pre>
           </div>
-          <div className="w-dev__list">
+          <div className="w-dev__list" data-w-stagger>
             {[
               { i: KeyRound, t: 'Bearer token auth', d: 'Live and sandbox keys from the portal. No OAuth dance.' },
               { i: ShieldCheck, t: 'Idempotency keys', d: 'Retry safely: the same key never creates a second charge.' },
@@ -600,7 +644,7 @@ export function SiteFooter() {
 
 export default function Home() {
   useEffect(() => {
-    const els = document.querySelectorAll('[data-w-reveal]')
+    const els = document.querySelectorAll('[data-w-reveal], [data-w-stagger], [data-w-watch]')
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) { e.target.classList.add('is-in'); obs.unobserve(e.target) }

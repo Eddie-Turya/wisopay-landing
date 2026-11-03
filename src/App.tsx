@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import {
   ArrowRight, ChevronRight,
   CheckCircle2, ExternalLink, Mail, MessageSquare, Building2, Send
@@ -850,9 +850,12 @@ function CookieBanner() {
 }
 
 export default function App() {
+  const { pathname } = useLocation()
+  useEffect(() => { if (!window.location.hash) window.scrollTo({ top: 0, behavior: 'instant' }) }, [pathname])
   return (
     <>
       <SiteNav />
+      <div key={pathname} className="w-route">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/docs" element={<DocsPage />} />
@@ -860,6 +863,7 @@ export default function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FaqRedirect />} />
       </Routes>
+      </div>
       <SiteFooter />
       <CookieBanner />
     </>
