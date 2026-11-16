@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Copy, Mail, MessageSquare, Building2, Send, ChevronDown, ArrowRight, BookOpen, FlaskConical, Lightbulb, AlertTriangle } from 'lucide-react'
+import { Check, Copy, Mail, Phone, MessageSquare, Building2, Send, ChevronDown, ArrowRight, BookOpen, FlaskConical, Lightbulb, AlertTriangle } from 'lucide-react'
 import './pages.css'
 
 const PORTAL = 'https://portal.wisopay.io'
@@ -330,6 +330,7 @@ const SUBJECTS = [
 
 const CHANNELS = [
   { icon: Mail, label: 'Support', value: 'support@wisopay.io', note: 'Integration and account help' },
+  { icon: Phone, label: 'WhatsApp', value: '+255 744 447 401', note: 'Quick help from the support team' },
   { icon: MessageSquare, label: 'Sales', value: 'sales@wisopay.io', note: 'Pricing and high-volume plans' },
   { icon: Building2, label: 'Partnerships', value: 'partners@wisopay.io', note: 'Platforms and resellers' },
 ]
