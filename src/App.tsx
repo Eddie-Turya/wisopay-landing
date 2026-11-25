@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { startAnalytics, trackPageview } from './analytics'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { ArrowRight, CheckCircle2, ExternalLink } from 'lucide-react'
 import './App.css'
@@ -213,6 +214,7 @@ function CookieBanner() {
 
   function accept() {
     try { localStorage.setItem('cookie_consent', 'accepted') } catch {}
+    window.dispatchEvent(new Event('wp-consent'))
     setVisible(false)
   }
 
@@ -242,6 +244,8 @@ function CookieBanner() {
 export default function App() {
   const { pathname } = useLocation()
   useEffect(() => { if (!window.location.hash) window.scrollTo({ top: 0, behavior: 'instant' }) }, [pathname])
+  useEffect(() => { startAnalytics() }, [])
+  useEffect(() => { trackPageview(pathname) }, [pathname])
   return (
     <>
       <SiteNav />
