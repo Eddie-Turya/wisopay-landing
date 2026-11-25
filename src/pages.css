@@ -172,3 +172,7 @@
 @media (prefers-reduced-motion: reduce) {
   .p-faq__a { transition: none; }
 }
+
+/* Shared API docs (src/docs) */
+.p-apidocs { padding-block: 32px 120px; }
+.p-apidocs .p-docs__cta { margin-top: 48px; }

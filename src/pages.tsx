@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Copy, Mail, Phone, MessageSquare, Building2, Send, ChevronDown, ArrowRight, BookOpen, FlaskConical, Lightbulb, AlertTriangle } from 'lucide-react'
+import { Check, Copy, Mail, Phone, MessageSquare, Building2, Send, ChevronDown, ArrowRight, BookOpen, FlaskConical } from 'lucide-react'
 import './pages.css'
+import { ApiDocs } from './docs/ApiDocs'
 
 const PORTAL = 'https://portal.wisopay.io'
 
@@ -36,271 +37,29 @@ export function CodeBlock({ label, code }: { label: string; code: string }) {
   )
 }
 
-function Callout({ tone, children }: { tone: 'tip' | 'warn'; children: React.ReactNode }) {
-  const Icon = tone === 'tip' ? Lightbulb : AlertTriangle
-  return (
-    <div className={`p-callout p-callout--${tone}`}>
-      <Icon size={17} />
-      <div>{children}</div>
-    </div>
-  )
-}
 
 // ─── Docs ────────────────────────────────────────────────────────────────────
 
-const ENDPOINTS = [
-  {
-    method: 'POST', path: '/v1/payments',
-    desc: 'Start a USSD push payment. Returns straight away with status PROCESSING. Use webhooks (or poll the GET endpoint) to confirm completion.',
-    body: `{
-  "amount_minor": 25000,
-  "currency": "TZS",
-  "payer": { "msisdn": "255712345678" },
-  "merchant_reference": "order_001",
-  "callback_url": "https://yoursite.com/webhooks"
-}`,
-    response: `{
-  "id": "TXN-T4K2QZ-7HF2",
-  "status": "PROCESSING",
-  "amount_minor": 25000,
-  "currency": "TZS",
-  "created_at": "2026-11-03T10:30:00Z"
-}`,
-  },
-  {
-    method: 'GET', path: '/v1/payments/:id',
-    desc: 'Retrieve a single payment by ID. Poll this endpoint to check status after creation.',
-    body: null,
-    response: `{
-  "id": "TXN-T4K2QZ-7HF2",
-  "status": "COMPLETED",
-  "amount_minor": 25000,
-  "currency": "TZS",
-  "merchant_reference": "order_001",
-  "completed_at": "2026-11-03T10:32:00Z"
-}`,
-  },
-  {
-    method: 'GET', path: '/v1/payments',
-    desc: 'List payments for the current environment. Supports limit and offset for pagination.',
-    body: null,
-    response: `{
-  "object": "list",
-  "data": [ /* payment objects */ ],
-  "has_more": false,
-  "next_cursor": null
-}`,
-  },
-  {
-    method: 'POST', path: '/v1/payment-links',
-    desc: 'Create a shareable payment link. The customer opens the URL and pays from any mobile money network.',
-    body: `{
-  "amount_minor": 50000,
-  "currency": "TZS",
-  "label": "Invoice #1042",
-  "expires_in": 3600
-}`,
-    response: `{
-  "id": "lnk_xyz789",
-  "url": "https://wisopay.io/pay/lnk_xyz789",
-  "expires_at": "2026-11-03T11:00:00Z"
-}`,
-  },
-]
-
-const DOC_NAV = [
-  { id: 'quickstart', label: 'Quick start' },
-  { id: 'auth', label: 'Authentication' },
-  { id: 'baseurl', label: 'Base URL' },
-  { id: 'idempotency', label: 'Idempotency' },
-  { id: 'endpoints', label: 'Endpoints' },
-  { id: 'webhooks', label: 'Webhooks' },
-  { id: 'statuses', label: 'Payment statuses' },
-  { id: 'errors', label: 'Error codes' },
-]
-
-const STATUSES = [
-  { s: 'PROCESSING', tone: 'info', d: 'USSD push sent, waiting for the customer to approve.' },
-  { s: 'COMPLETED', tone: 'ok', d: 'Customer approved and the funds were collected.' },
-  { s: 'FAILED', tone: 'err', d: 'Customer declined, timed out, or had insufficient funds.' },
-  { s: 'CANCELLED', tone: 'mute', d: 'The payment was cancelled through the API.' },
-]
-
-const ERRORS = [
-  { http: 400, code: 'validation_error', desc: 'A required field is missing or has an invalid value.' },
-  { http: 401, code: 'authentication_error', desc: 'Invalid or missing API key.' },
-  { http: 403, code: 'authorization_error', desc: 'The key is valid but the environment is inactive or revoked.' },
-  { http: 404, code: 'not_found_error', desc: 'The requested resource does not exist.' },
-  { http: 409, code: 'idempotency_conflict', desc: 'A different request body was sent with an existing idempotency key.' },
-  { http: 422, code: 'payment_error', desc: 'The mobile network rejected the payment.' },
-  { http: 500, code: 'internal_error', desc: 'Unexpected server error. Contact support if it persists.' },
-]
-
 export function DocsPage() {
-  const [active, setActive] = useState('quickstart')
   useReveal()
-
-  useEffect(() => {
-    const sections = document.querySelectorAll<HTMLElement>('[data-docs-section]')
-    const obs = new IntersectionObserver(entries => {
-      const visible = entries.filter(e => e.isIntersecting)
-      if (visible.length) setActive(visible[0].target.getAttribute('data-docs-section') || '')
-    }, { rootMargin: '-15% 0px -70% 0px' })
-    sections.forEach(s => obs.observe(s))
-    return () => obs.disconnect()
-  }, [])
-
-  const code = (s: string) => <code className="p-inline">{s}</code>
-
   return (
     <main className="w-page p-page">
       <section className="p-hero">
         <div className="w-wrap p-hero__inner">
           <span className="w-pill w-pill--yellow">API reference · v1</span>
           <h1 className="w-h1">Documentation</h1>
-          <p className="p-hero__lead">Everything you need to integrate WisoPay. Bearer token auth, JSON in, JSON out.</p>
+          <p className="p-hero__lead">Everything you need to take mobile money payments and refunds with WisoPay. Bearer token auth, JSON in, JSON out.</p>
           <div className="p-hero__tags"><span>REST</span><span>JSON</span><span>HTTPS</span><span>TZS</span></div>
         </div>
       </section>
-
-      <div className="w-wrap p-docs">
-        <aside className="p-docs__side">
-          <nav aria-label="On this page">
-            <p className="p-docs__label">On this page</p>
-            {DOC_NAV.map(n => (
-              <a key={n.id} href={`#${n.id}`} className={`p-docs__link ${active === n.id ? 'is-on' : ''}`}>{n.label}</a>
-            ))}
-          </nav>
-          <div className="p-docs__res">
-            <p className="p-docs__label">Resources</p>
-            <Link to="/sandbox" className="p-docs__res-link"><FlaskConical size={15} /> Sandbox</Link>
-            <a href={PORTAL} className="p-docs__res-link"><BookOpen size={15} /> Merchant portal</a>
+      <div className="w-wrap p-apidocs">
+        <ApiDocs topOffset={88} />
+        <div className="p-docs__cta" data-w-reveal>
+          <div>
+            <h3>Ready to go live?</h3>
+            <p>Create an account, test in the sandbox, then switch to your live key.</p>
           </div>
-        </aside>
-
-        <div className="p-docs__body">
-          <section id="quickstart" data-docs-section="quickstart" className="p-sec" data-w-reveal>
-            <p className="p-sec__eyebrow">Start here</p>
-            <h2>Quick start</h2>
-            <p className="p-sec__lead">Get an API key from the <a href={PORTAL} className="p-link">merchant portal</a> and trigger a USSD push in under a minute.</p>
-            <CodeBlock label="shell" code={`curl -X POST https://api.wisopay.io/v1/payments \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -H "Idempotency-Key: order_001" \\
-  -d '{
-    "amount_minor": 25000,
-    "currency": "TZS",
-    "payer": { "msisdn": "255712345678" },
-    "merchant_reference": "order_001",
-    "callback_url": "https://yoursite.com/webhooks"
-  }'`} />
-            <Callout tone="tip"><strong>Testing?</strong> Use a sandbox key and <Link to="/sandbox" className="p-link">sandbox mode</Link>: payments complete instantly with no real USSD push.</Callout>
-          </section>
-
-          <section id="auth" data-docs-section="auth" className="p-sec" data-w-reveal>
-            <p className="p-sec__eyebrow">Security</p>
-            <h2>Authentication</h2>
-            <p className="p-sec__lead">Every request needs your API key as a Bearer token in the {code('Authorization')} header. Keys are scoped to an environment: sandbox keys only reach sandbox, live keys only reach live.</p>
-            <CodeBlock label="http" code="Authorization: Bearer YOUR_API_KEY" />
-            <Callout tone="warn">Never expose your API key in client-side code or commit it to version control.</Callout>
-          </section>
-
-          <section id="baseurl" data-docs-section="baseurl" className="p-sec" data-w-reveal>
-            <p className="p-sec__eyebrow">Endpoint</p>
-            <h2>Base URL</h2>
-            <p className="p-sec__lead">All requests go to the same base URL. Your API key decides which environment is used.</p>
-            <CodeBlock label="url" code="https://api.wisopay.io/v1" />
-            <div className="p-envs">
-              <div className="p-env"><span className="p-badge p-badge--ok">Live</span>{code('dpay_live_…')}<span>Real payments. Funds move.</span></div>
-              <div className="p-env"><span className="p-badge p-badge--mute">Sandbox</span>{code('dpay_test_…')}<span>Simulated payments, no real charges.</span></div>
-            </div>
-          </section>
-
-          <section id="idempotency" data-docs-section="idempotency" className="p-sec" data-w-reveal>
-            <p className="p-sec__eyebrow">Reliability</p>
-            <h2>Idempotency</h2>
-            <p className="p-sec__lead">Send an {code('Idempotency-Key')} header on every {code('POST')}. If the same key is reused, WisoPay returns the original response instead of creating a duplicate payment.</p>
-            <CodeBlock label="http" code="Idempotency-Key: your_unique_key_here" />
-            <p className="p-sec__note">Use a UUID or your own {code('merchant_reference')}. Keys are scoped to your environment and expire after 24 hours.</p>
-          </section>
-
-          <section id="endpoints" data-docs-section="endpoints" className="p-sec" data-w-reveal>
-            <p className="p-sec__eyebrow">API reference</p>
-            <h2>Endpoints</h2>
-            <div className="p-endpoints">
-              {ENDPOINTS.map(ep => (
-                <article key={`${ep.method} ${ep.path}`} className="p-endpoint">
-                  <div className="p-endpoint__head">
-                    <span className={`p-method p-method--${ep.method.toLowerCase()}`}>{ep.method}</span>
-                    <code>{ep.path}</code>
-                  </div>
-                  <p>{ep.desc}</p>
-                  <div className={`p-endpoint__cols ${ep.body ? '' : 'is-single'}`}>
-                    {ep.body && <CodeBlock label="request body" code={ep.body} />}
-                    <CodeBlock label="response" code={ep.response} />
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section id="webhooks" data-docs-section="webhooks" className="p-sec" data-w-reveal>
-            <p className="p-sec__eyebrow">Events</p>
-            <h2>Webhooks</h2>
-            <p className="p-sec__lead">WisoPay sends a {code('POST')} to your {code('callback_url')} when a payment's status changes. Reply with HTTP 200 to acknowledge it.</p>
-            <CodeBlock label="json" code={`{
-  "event": "payment.completed",
-  "payment": {
-    "id": "TXN-T4K2QZ-7HF2",
-    "status": "COMPLETED",
-    "amount_minor": 25000,
-    "currency": "TZS",
-    "merchant_reference": "order_001"
-  }
-}`} />
-            <Callout tone="tip">If your endpoint doesn't return HTTP 200, the webhook is retried with exponential backoff.</Callout>
-          </section>
-
-          <section id="statuses" data-docs-section="statuses" className="p-sec" data-w-reveal>
-            <p className="p-sec__eyebrow">Payment lifecycle</p>
-            <h2>Payment statuses</h2>
-            <div className="p-statuses">
-              {STATUSES.map(st => (
-                <div key={st.s} className="p-status">
-                  <span className={`p-badge p-badge--${st.tone}`}>{st.s}</span>
-                  <span>{st.d}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section id="errors" data-docs-section="errors" className="p-sec" data-w-reveal>
-            <p className="p-sec__eyebrow">Troubleshooting</p>
-            <h2>Error codes</h2>
-            <p className="p-sec__lead">Every error returns JSON with an {code('error_code')} and a readable {code('message')}.</p>
-            <div className="p-table-wrap">
-              <table className="p-table">
-                <thead><tr><th>HTTP</th><th>error_code</th><th>Meaning</th></tr></thead>
-                <tbody>
-                  {ERRORS.map(r => (
-                    <tr key={r.code}>
-                      <td><span className={`p-http ${r.http >= 500 ? 'is-err' : 'is-warn'}`}>{r.http}</span></td>
-                      <td>{code(r.code)}</td>
-                      <td>{r.desc}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <div className="p-docs__cta" data-w-reveal>
-            <div>
-              <h3>Ready to go live?</h3>
-              <p>Create an account, test in the sandbox, then switch to your live key.</p>
-            </div>
-            <a href={`${PORTAL}/signup`} className="w-btn w-btn--lime">Create an account <ArrowRight size={16} /></a>
-          </div>
+          <a href={`${PORTAL}/signup`} className="w-btn w-btn--lime">Create an account <ArrowRight size={16} /></a>
         </div>
       </div>
     </main>
